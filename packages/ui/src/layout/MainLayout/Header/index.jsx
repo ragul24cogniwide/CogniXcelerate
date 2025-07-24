@@ -166,12 +166,14 @@ const Header = ({ handleLeftDrawerToggle, selectedMenu, setSelectedMenu }) => {
 
     // Update selectedMenu on URL change (initial and later)
     useEffect(() => {
-        // Find menu whose one item path matches current URL prefix
-        const foundMenu = headerMenus.find((menu) => menu.items.some((item) => location.pathname.startsWith(item.path)))
-        if (foundMenu) {
-            setSelectedMenu(foundMenu.label)
-        } else {
-            setSelectedMenu(headerMenus[0].label) // fallback
+        // Only update selectedMenu from URL if not currently INSIGHTS
+        if (selectedMenu !== 'INSIGHTS') {
+            const foundMenu = headerMenus.find((menu) => menu.items.some((item) => location.pathname.startsWith(item.path)))
+            if (foundMenu) {
+                setSelectedMenu(foundMenu.label)
+            } else {
+                setSelectedMenu(headerMenus[0].label) // fallback
+            }
         }
     }, [location.pathname])
 
@@ -231,8 +233,14 @@ const Header = ({ handleLeftDrawerToggle, selectedMenu, setSelectedMenu }) => {
                         key={menu.label}
                         variant='text'
                         onClick={() => {
-                            if (menu.items.length > 0) navigate(menu.items[0].path)
-                            setSelectedMenu(menu.label)
+                            if (menu.label === 'INSIGHTS' || menu.label === 'SOLUTIONS') {
+                                setSelectedMenu(menu.label)
+                            } else if (menu.items.length > 0) {
+                                navigate(menu.items[0].path)
+                                setSelectedMenu(menu.label)
+                            } else {
+                                setSelectedMenu(menu.label)
+                            }
                         }}
                         sx={{
                             whiteSpace: 'nowrap',

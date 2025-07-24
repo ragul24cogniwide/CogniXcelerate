@@ -21,10 +21,13 @@ const MenuList = ({ selectedMenu }) => {
             }
         ]
     } else if (selectedMenu === 'INSIGHTS') {
+        // Always show TrackBoard and RunBoard regardless of permission/display
         filteredDashboard.children = [
             {
                 ...dashboard.children[0],
-                children: dashboard.children[0].children.filter((item) => ['cognifuse', 'executions'].includes(item.id))
+                children: dashboard.children[0].children
+                    .filter((item) => ['cognifuse', 'executions'].includes(item.id))
+                    .map((item) => ({ ...item, permission: undefined, display: undefined }))
             }
         ]
     } else if (selectedMenu === 'ADMINISTRATION') {
@@ -38,7 +41,16 @@ const MenuList = ({ selectedMenu }) => {
         filteredDashboard.children = [
             {
                 ...dashboard.children[0],
-                children: []
+                children: [
+                    {
+                        id: 'solutions',
+                        title: 'Solutions',
+                        type: 'item',
+                        url: '/solutions',
+                        icon: dashboard.children[0].children[0].icon, // Use any icon from dashboard for consistency
+                        breadcrumbs: true
+                    }
+                ]
             }
         ]
     } else {
