@@ -19,7 +19,7 @@ import { drawerWidth, headerHeight } from '@/store/constant'
 
 // ==============================|| SIDEBAR DRAWER ||============================== //
 
-const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
+const Sidebar = ({ drawerOpen, drawerToggle, window, selectedMenu }) => {
     const theme = useTheme()
     const matchUpMd = useMediaQuery(theme.breakpoints.up('md'))
     const isAuthenticated = useSelector((state) => state.auth.isAuthenticated)
@@ -45,13 +45,13 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
                         flexDirection: 'column'
                     }}
                 >
-                    <MenuList />
+                    <MenuList selectedMenu={selectedMenu} />
                     <CloudMenuList />
                 </PerfectScrollbar>
             </BrowserView>
             <MobileView>
                 <Box sx={{ px: 2 }}>
-                    <MenuList />
+                    <MenuList selectedMenu={selectedMenu} />
                     <CloudMenuList />
                 </Box>
             </MobileView>
@@ -65,7 +65,7 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
             component='nav'
             sx={{
                 flexShrink: { md: 0 },
-                width: matchUpMd ? drawerWidth  : 'auto'
+                width: matchUpMd ? drawerWidth : 'auto'
             }}
             aria-label='mailbox folders'
         >
@@ -118,20 +118,30 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
                                         flexDirection: 'column'
                                     }}
                                 >
-                                    <MenuList />
+                                    <MenuList selectedMenu={selectedMenu} />
                                     <CloudMenuList />
                                 </PerfectScrollbar>
                             </BrowserView>
                             <MobileView>
                                 <Box sx={{ px: 2 }}>
-                                    <MenuList />
+                                    <MenuList selectedMenu={selectedMenu} />
                                     <CloudMenuList />
                                 </Box>
                             </MobileView>
                         </>
                     ) : (
                         // Only logo when closed
-                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'center', cursor: 'pointer' }} onClick={drawerToggle}>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                height: '100%',
+                                justifyContent: 'center',
+                                cursor: 'pointer'
+                            }}
+                            onClick={drawerToggle}
+                        >
                             <LogoSection />
                         </Box>
                     )}
@@ -144,7 +154,8 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
 Sidebar.propTypes = {
     drawerOpen: PropTypes.bool,
     drawerToggle: PropTypes.func,
-    window: PropTypes.object
+    window: PropTypes.object,
+    selectedMenu: PropTypes.string
 }
 
 export default Sidebar
