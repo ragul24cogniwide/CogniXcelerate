@@ -1,14 +1,51 @@
 // material-ui
 import { Box, Typography } from '@mui/material'
+import PropTypes from 'prop-types'
 
 // project imports
 import NavGroup from './NavGroup'
-import { menuItems } from '@/menu-items'
+import dashboard from '@/menu-items/dashboard'
 
 // ==============================|| SIDEBAR MENU LIST ||============================== //
 
-const MenuList = () => {
-    const navItems = menuItems.items.map((item) => {
+const MenuList = ({ selectedMenu }) => {
+    // Filtering logic based on selectedMenu
+    let filteredDashboard = { ...dashboard }
+    if (selectedMenu === 'CRAFT') {
+        filteredDashboard.children = [
+            {
+                ...dashboard.children[0],
+                children: dashboard.children[0].children.filter((item) =>
+                    ['chatflows', 'agentflows', 'document-stores', 'tools'].includes(item.id)
+                )
+            }
+        ]
+    } else if (selectedMenu === 'INSIGHTS') {
+        filteredDashboard.children = [
+            {
+                ...dashboard.children[0],
+                children: dashboard.children[0].children.filter((item) => ['cognifuse', 'executions'].includes(item.id))
+            }
+        ]
+    } else if (selectedMenu === 'ADMINISTRATION') {
+        filteredDashboard.children = [
+            {
+                ...dashboard.children[0],
+                children: dashboard.children[0].children.filter((item) => ['credentials', 'variables', 'apikey'].includes(item.id))
+            }
+        ]
+    } else if (selectedMenu === 'SOLUTIONS') {
+        filteredDashboard.children = [
+            {
+                ...dashboard.children[0],
+                children: []
+            }
+        ]
+    } else {
+        // Default: show all
+        filteredDashboard = dashboard
+    }
+    const navItems = [filteredDashboard].map((item) => {
         switch (item.type) {
             case 'group':
                 return <NavGroup key={item.id} item={item} />
@@ -20,8 +57,10 @@ const MenuList = () => {
                 )
         }
     })
-
     return <Box>{navItems}</Box>
+}
+MenuList.propTypes = {
+    selectedMenu: PropTypes.string
 }
 
 export default MenuList

@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Outlet } from 'react-router-dom'
+import { useState } from 'react'
 
 // material-ui
 import { styled, useTheme } from '@mui/material/styles'
@@ -67,6 +68,9 @@ const MainLayout = () => {
         dispatch({ type: SET_MENU, opened: !leftDrawerOpened })
     }
 
+    // LIFTED STATE: selectedMenu for header/sidebar coordination
+    const [selectedMenu, setSelectedMenu] = useState('CRAFT')
+
     useEffect(() => {
         setTimeout(() => dispatch({ type: SET_MENU, opened: !matchDownMd }), 0)
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -87,12 +91,12 @@ const MainLayout = () => {
                 }}
             >
                 <Toolbar sx={{ height: `${headerHeight}px`, borderBottom: '1px solid', borderColor: theme.palette.grey[900] + 25 }}>
-                    <Header handleLeftDrawerToggle={handleLeftDrawerToggle} />
+                    <Header handleLeftDrawerToggle={handleLeftDrawerToggle} selectedMenu={selectedMenu} setSelectedMenu={setSelectedMenu} />
                 </Toolbar>
             </AppBar>
 
             {/* drawer */}
-            <Sidebar drawerOpen={leftDrawerOpened} drawerToggle={handleLeftDrawerToggle} />
+            <Sidebar drawerOpen={leftDrawerOpened} drawerToggle={handleLeftDrawerToggle} selectedMenu={selectedMenu} />
 
             {/* main content */}
             <Main theme={theme} open={leftDrawerOpened}>
