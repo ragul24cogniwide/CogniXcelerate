@@ -170,7 +170,16 @@ class ConversationChain_Chains implements INode {
 
 const prepareChatPrompt = (nodeData: INodeData, humanImageMessages: MessageContentImageUrl[]) => {
     const memory = nodeData.inputs?.memory as FlowiseMemory
-    let prompt = nodeData.inputs?.systemMessagePrompt as string
+    const promptSource = nodeData.inputs?.promptSource as string
+    const systemPrompt = nodeData.inputs?.systemMessagePrompt as string
+    const langfusePrompt = nodeData.inputs?.langfusePrompt as string
+
+    let prompt = systemPrompt // default
+
+    if (promptSource === 'langfuse' && langfusePrompt) {
+        prompt = langfusePrompt
+    }
+
     prompt = transformBracesWithColon(prompt)
     const chatPromptTemplate = nodeData.inputs?.chatPromptTemplate as ChatPromptTemplate
     let model = nodeData.inputs?.model as BaseChatModel

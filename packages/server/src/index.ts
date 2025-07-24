@@ -34,7 +34,7 @@ import { Workspace } from './enterprise/database/entities/workspace.entity'
 import { Organization } from './enterprise/database/entities/organization.entity'
 import { GeneralRole, Role } from './enterprise/database/entities/role.entity'
 import { migrateApiKeysFromJsonToDb } from './utils/apiKey'
-
+import langfuseRouter from './routes/LangfuseClient'
 
 declare global {
     namespace Express {
@@ -371,6 +371,15 @@ export async function start(): Promise<void> {
     })
 }
 
+const app = express()
+const PORT = 3001
+app.use(express.json())
+app.use(cors({ origin: 'http://localhost:8080', credentials: true }))
+app.use('/api/v1', langfuseRouter)
+
+app.listen(PORT, () => {
+    console.log(`✅ Server running on http://localhost:${PORT}`)
+})
 export function getInstance(): App | undefined {
     return serverApp
 }

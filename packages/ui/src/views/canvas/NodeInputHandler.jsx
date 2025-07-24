@@ -64,6 +64,7 @@ import PromptGeneratorDialog from '@/ui-component/dialog/PromptGeneratorDialog'
 // API
 import assistantsApi from '@/api/assistants'
 import documentstoreApi from '@/api/documentstore'
+import promptApi from '@/api/prompt'
 
 // utils
 import {
@@ -160,6 +161,12 @@ const NodeInputHandler = ({
 
     const [promptGeneratorDialogOpen, setPromptGeneratorDialogOpen] = useState(false)
     const [promptGeneratorDialogProps, setPromptGeneratorDialogProps] = useState({})
+
+    // Langfuse prompt state
+    const [showLangfusePromptDialog, setShowLangfusePromptDialog] = useState(false)
+    const [langfusePrompts, setLangfusePrompts] = useState([])
+    const [langfusePromptLoading, setLangfusePromptLoading] = useState(false)
+    const [langfusePromptError, setLangfusePromptError] = useState('')
 
     const handleDataChange = ({ inputParam, newValue }) => {
         data.inputs[inputParam.name] = newValue
@@ -765,6 +772,42 @@ const NodeInputHandler = ({
         setModelSelectionDialogOpen(true)
     }
 
+    // Handler to open Langfuse prompt dialog
+    const onAddLangfusePromptClicked = async () => {
+        setLangfusePromptLoading(true)
+        setLangfusePromptError('')
+        setShowLangfusePromptDialog(true)
+        try {
+            const resp = await promptApi.getLangfusePrompts()
+            if (resp.data && Array.isArray(resp.data)) {
+                setLangfusePrompts(resp.data)
+            } else if (resp.data && Array.isArray(resp.data.prompts)) {
+                setLangfusePrompts(resp.data.prompts)
+            } else {
+                setLangfusePrompts([])
+            }
+        } catch (err) {
+            setLangfusePrompts([])
+            setLangfusePromptError('Failed to fetch prompts from Langfuse.')
+        } finally {
+            setLangfusePromptLoading(false)
+        }
+    }
+
+    // Handler for selecting a Langfuse prompt
+    const onSelectLangfusePrompt = (prompt) => {
+        const promptText = prompt.prompt || prompt.value || ''
+        data.inputs['langfusePrompt'] = promptText
+        data.inputs['systemMessagePrompt'] = promptText // Reflect in system message box
+        data.inputs['promptSource'] = 'langfuse'
+        setShowLangfusePromptDialog(false)
+    }
+
+    // Handler for switching prompt source
+    const onPromptSourceChange = (source) => {
+        data.inputs['promptSource'] = source
+    }
+
     useEffect(() => {
         if (ref.current && ref.current.offsetTop && ref.current.clientHeight) {
             setPosition(ref.current.offsetTop + ref.current.clientHeight / 2)
@@ -807,6 +850,90 @@ const NodeInputHandler = ({
 
             {((inputParam && !inputParam.additionalParams) || isAdditionalParams) && (
                 <>
+                    {/* Add Prompt Source Switcher for ConversationChain additionalParams */}
+                    {data.name === 'conversationChain' && inputParam.name === 'systemMessagePrompt' && isAdditionalParams && (
+                        <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', mb: 2, gap: 2 }}>
+                            <Typography variant='subtitle2'>Prompt Source:</Typography>
+                            <Dropdown
+                                name='promptSource'
+                                options={[
+                                    { name: 'system', label: 'System Message' },
+                                    { name: 'langfuse', label: 'Add Prompt (Langfuse)' }
+                                ]}
+                                value={data.inputs['promptSource'] || 'system'}
+                                onSelect={onPromptSourceChange}
+                            />
+                            {data.inputs['promptSource'] === 'langfuse' && (
+                                <Button
+                                    variant='outlined'
+                                    color='primary'
+                                    onClick={onAddLangfusePromptClicked}
+                                    disabled={langfusePromptLoading}
+                                >
+                                    {langfusePromptLoading ? 'Loading...' : 'Select'}
+                                </Button>
+                            )}
+                        </Box>
+                    )}
+                    {/* Show error if Langfuse prompt fetch fails */}
+                    {showLangfusePromptDialog && (
+                        <Dialog open={showLangfusePromptDialog} onClose={() => setShowLangfusePromptDialog(false)} maxWidth='sm' fullWidth>
+                            <DialogTitle>Select a Prompt from Langfuse</DialogTitle>
+                            <DialogContent>
+                                {langfusePromptError && <Typography color='error'>{langfusePromptError}</Typography>}
+                                {langfusePromptLoading ? (
+                                    <Typography>Loading...</Typography>
+                                ) : (
+                                    <Box sx={{ mt: 2 }}>
+                                        {langfusePrompts.length === 0 ? (
+                                            <Typography>No prompts found.</Typography>
+                                        ) : (
+                                            <Box>
+                                                {langfusePrompts.map((prompt, idx) => (
+                                                    <Box
+                                                        key={idx}
+                                                        sx={{ mb: 1, p: 1, border: '1px solid #eee', borderRadius: 1, cursor: 'pointer' }}
+                                                        onClick={() => onSelectLangfusePrompt(prompt)}
+                                                    >
+                                                        <Typography variant='subtitle2'>
+                                                            {prompt.name || prompt.label || prompt.prompt || 'Unnamed Prompt'}
+                                                        </Typography>
+                                                        {prompt.prompt && (
+                                                            <Typography variant='body2' sx={{ color: 'gray' }}>
+                                                                {prompt.prompt.slice(0, 100)}...
+                                                            </Typography>
+                                                        )}
+                                                    </Box>
+                                                ))}
+                                            </Box>
+                                        )}
+                                    </Box>
+                                )}
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={() => setShowLangfusePromptDialog(false)}>Cancel</Button>
+                            </DialogActions>
+                        </Dialog>
+                    )}
+                    {/* Only show the input for the selected prompt source */}
+                    {data.name === 'conversationChain' && inputParam.name === 'systemMessagePrompt' && isAdditionalParams ? (
+                        data.inputs['promptSource'] === 'langfuse' ? (
+                            <Box sx={{ mt: 2 }}>
+                                <Typography variant='subtitle2'>Selected Langfuse Prompt:</Typography>
+                                <Box sx={{ p: 1, border: '1px solid #eee', borderRadius: 1, background: '#fafafa' }}>
+                                    <Typography variant='body2' sx={{ whiteSpace: 'pre-wrap' }}>
+                                        {data.inputs['langfusePrompt'] || 'No prompt selected.'}
+                                    </Typography>
+                                </Box>
+                            </Box>
+                        ) : (
+                            // Default system message input
+                            <Box>
+                                {/* Render the default input for systemMessagePrompt below, but only if promptSource is not langfuse */}
+                                {/* The rest of the input rendering logic will continue as normal */}
+                            </Box>
+                        )
+                    ) : null}
                     {inputParam.acceptVariable && !isAdditionalParams && (
                         <CustomWidthTooltip placement='left' title={inputParam.type}>
                             <Handle
