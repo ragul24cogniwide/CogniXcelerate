@@ -15,7 +15,15 @@ import OrgWorkspaceBreadcrumbs from '@/layout/MainLayout/Header/OrgWorkspaceBrea
 import PricingDialog from '@/ui-component/subscription/PricingDialog'
 
 // assets
-import { IconMenu2, IconX, IconSparkles } from '@tabler/icons-react'
+import {
+    IconMenu2,
+    IconX,
+    IconSparkles,
+    IconHammer, // For CRAFT - more intuitive than IconTool
+    IconChartLine, // For INSIGHTS - modern analytics symbol
+    IconRocket, // For SOLUTIONS - represents innovation and problem-solving
+    IconShield // For ADMINISTRATION - represents security and management
+} from '@tabler/icons-react'
 
 // store
 import { store } from '@/store'
@@ -137,6 +145,7 @@ const Header = ({ handleLeftDrawerToggle, selectedMenu, setSelectedMenu }) => {
     const headerMenus = [
         {
             label: 'CRAFT',
+            icon: IconHammer,
             items: [
                 { label: 'RAGflow studio', path: '/chatflows' },
                 { label: 'AgentHub / AgentMesh', path: '/agentflows' },
@@ -145,6 +154,7 @@ const Header = ({ handleLeftDrawerToggle, selectedMenu, setSelectedMenu }) => {
         },
         {
             label: 'INSIGHTS',
+            icon: IconChartLine,
             items: [
                 { label: 'TrackBoard', path: '/trackboard' },
                 { label: 'RunBoard', path: '/runboard' }
@@ -152,10 +162,12 @@ const Header = ({ handleLeftDrawerToggle, selectedMenu, setSelectedMenu }) => {
         },
         {
             label: 'SOLUTIONS',
+            icon: IconRocket,
             items: [{ label: 'Solutions', path: '/solutions' }]
         },
         {
             label: 'ADMINISTRATION',
+            icon: IconShield,
             items: [
                 { label: 'Credentials', path: '/credentials' },
                 { label: 'Variables', path: '/variables' },
@@ -228,49 +240,56 @@ const Header = ({ handleLeftDrawerToggle, selectedMenu, setSelectedMenu }) => {
                     flexWrap: 'wrap'
                 }}
             >
-                {headerMenus.map((menu) => (
-                    <Button
-                        key={menu.label}
-                        variant='text'
-                        onClick={() => {
-                            if (menu.label === 'INSIGHTS' || menu.label === 'SOLUTIONS') {
-                                setSelectedMenu(menu.label)
-                            } else if (menu.items.length > 0) {
-                                navigate(menu.items[0].path)
-                                setSelectedMenu(menu.label)
-                            } else {
-                                setSelectedMenu(menu.label)
-                            }
-                        }}
-                        sx={{
-                            whiteSpace: 'nowrap',
-                            px: 2,
-                            textTransform: 'none',
-                            fontWeight: 'bold',
-                            fontSize: '0.875rem',
-                            color: theme.palette.text.primary,
-                            borderRadius: 1,
-                            textDecoration: selectedMenu === menu.label ? 'underline' : 'none',
-                            textUnderlineOffset: selectedMenu === menu.label ? '4px' : 'auto',
-                            textDecorationThickness: selectedMenu === menu.label ? '2px' : 'auto',
-                            textDecorationColor: selectedMenu === menu.label ? theme.palette.primary.main : 'inherit',
-                            transition: 'all 0.2s ease-in-out',
-                            '&:hover': {
-                                backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)',
-                                textDecoration: 'underline',
-                                textDecorationThickness: '2px',
-                                textDecorationColor: theme.palette.primary.main
-                            },
-                            '&:focus-visible': {
-                                outline: `2px solid ${theme.palette.primary.main}`,
-                                outlineOffset: 2
-                            }
-                        }}
-                        aria-current={selectedMenu === menu.label ? 'page' : undefined}
-                    >
-                        {menu.label}
-                    </Button>
-                ))}
+                {headerMenus.map((menu) => {
+                    const IconComponent = menu.icon
+                    return (
+                        <Button
+                            key={menu.label}
+                            variant='text'
+                            onClick={() => {
+                                if (menu.label === 'INSIGHTS') {
+                                    navigate('/cognifuse')
+                                    setSelectedMenu(menu.label)
+                                } else if (menu.label === 'SOLUTIONS') {
+                                    setSelectedMenu(menu.label)
+                                } else if (menu.items.length > 0) {
+                                    navigate(menu.items[0].path)
+                                    setSelectedMenu(menu.label)
+                                } else {
+                                    setSelectedMenu(menu.label)
+                                }
+                            }}
+                            startIcon={<IconComponent size={18} />}
+                            sx={{
+                                whiteSpace: 'nowrap',
+                                px: 2,
+                                textTransform: 'none',
+                                fontWeight: 'bold',
+                                fontSize: '0.875rem',
+                                color: theme.palette.text.primary,
+                                borderRadius: 1,
+                                textDecoration: selectedMenu === menu.label ? 'underline' : 'none',
+                                textUnderlineOffset: selectedMenu === menu.label ? '4px' : 'auto',
+                                textDecorationThickness: selectedMenu === menu.label ? '2px' : 'auto',
+                                textDecorationColor: selectedMenu === menu.label ? theme.palette.primary.main : 'inherit',
+                                transition: 'all 0.2s ease-in-out',
+                                '&:hover': {
+                                    backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)',
+                                    textDecoration: 'underline',
+                                    textDecorationThickness: '2px',
+                                    textDecorationColor: theme.palette.primary.main
+                                },
+                                '&:focus-visible': {
+                                    outline: `2px solid ${theme.palette.primary.main}`,
+                                    outlineOffset: 2
+                                }
+                            }}
+                            aria-current={selectedMenu === menu.label ? 'page' : undefined}
+                        >
+                            {menu.label}
+                        </Button>
+                    )
+                })}
             </Box>
 
             {/* Right side components */}

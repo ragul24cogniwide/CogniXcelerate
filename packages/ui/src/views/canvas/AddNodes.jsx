@@ -321,11 +321,15 @@ const AddNodes = ({ nodesData, node, isAgentCanvas, isAgentflowv2, onFlowGenerat
     return (
         <>
             <StyledFab
-                sx={{ left: 1420, top: 20,backgroundColor: '#ff9800', // Custom color (orange)
-                    color: '#fff',              // Icon color (white)
+                sx={{
+                    left: 20,
+                    top: 20,
+                    backgroundColor: '#ff9800', // Custom color (orange)
+                    color: '#fff', // Icon color (white)
                     '&:hover': {
                         backgroundColor: '#fb8c00' // Darker on hover
-                    } }}
+                    }
+                }}
                 ref={anchorRef}
                 size='small'
                 //color='secondary'

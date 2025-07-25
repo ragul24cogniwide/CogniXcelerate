@@ -77,7 +77,7 @@ const dashboard = {
                 },
                 {
                     id: 'agentflows',
-                    title: 'AgentMesh',
+                    title: 'Agent Mesh',
                     type: 'item',
                     url: '/agentflows',
                     icon: icons.IconUsersGroup,
@@ -86,7 +86,7 @@ const dashboard = {
                 },
                 {
                     id: 'executions',
-                    title: 'RunBoard',
+                    title: 'Trace Logs',
                     type: 'item',
                     url: '/executions',
                     icon: icons.IconListCheck,
@@ -113,7 +113,7 @@ const dashboard = {
                 // },
                 {
                     id: 'tools',
-                    title: 'Utilities',
+                    title: 'Tool Kit',
                     type: 'item',
                     url: '/tools',
                     icon: icons.IconTool,
@@ -149,7 +149,7 @@ const dashboard = {
                 },
                 {
                     id: 'document-stores',
-                    title: 'Data Vault',
+                    title: 'Knowledge Base',
                     type: 'item',
                     url: '/document-stores',
                     icon: icons.IconFiles,
@@ -158,7 +158,7 @@ const dashboard = {
                 },
                 {
                     id: 'cognifuse',
-                    title: 'Track Board',
+                    title: 'Dashboard',
                     type: 'item',
                     url: '/cognifuse',
                     icon: icons.IconHierarchy,

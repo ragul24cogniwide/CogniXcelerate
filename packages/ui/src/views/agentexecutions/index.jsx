@@ -243,7 +243,7 @@ const AgentExecutions = () => {
                 <ErrorBoundary error={error} />
             ) : (
                 <Stack flexDirection='column' sx={{ gap: 3 }}>
-                    <ViewHeader title='Run Board ' description='Monitor and manage AgentMesh Executions' />
+                    <ViewHeader title='Trace Logs ' description='Monitor and manage AgentMesh Executions' />
 
                     {/* Filter Section */}
                     <Box sx={{ mb: 2, width: '100%' }}>

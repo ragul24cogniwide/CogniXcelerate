@@ -21,12 +21,18 @@ const MenuList = ({ selectedMenu }) => {
             }
         ]
     } else if (selectedMenu === 'INSIGHTS') {
-        // Always show TrackBoard and RunBoard regardless of permission/display
+        // Show Dashboard first, then Trace Logs
         filteredDashboard.children = [
             {
                 ...dashboard.children[0],
                 children: dashboard.children[0].children
                     .filter((item) => ['cognifuse', 'executions'].includes(item.id))
+                    .sort((a, b) => {
+                        // Ensure 'cognifuse' (Dashboard) comes first
+                        if (a.id === 'cognifuse') return -1
+                        if (b.id === 'cognifuse') return 1
+                        return 0
+                    })
                     .map((item) => ({ ...item, permission: undefined, display: undefined }))
             }
         ]

@@ -2,13 +2,11 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 // material-ui
-import { Chip, Box, Skeleton, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material'
+import { Chip, Box, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 
 // project imports
 import MainCard from '@/ui-component/cards/MainCard'
-import ItemCard from '@/ui-component/cards/ItemCard'
-import { gridSpacing } from '@/store/constant'
 import AgentsEmptySVG from '@/assets/images/agents_empty.svg'
 import ConfirmDialog from '@/ui-component/dialog/ConfirmDialog'
 import { FlowListTable } from '@/ui-component/table/FlowListTable'
@@ -27,7 +25,7 @@ import { baseURL, AGENTFLOW_ICONS } from '@/store/constant'
 import { useError } from '@/store/context/ErrorContext'
 
 // icons
-import { IconPlus, IconLayoutGrid, IconList } from '@tabler/icons-react'
+import { IconPlus } from '@tabler/icons-react'
 
 // ==============================|| AGENTS ||============================== //
 
@@ -42,14 +40,16 @@ const Agentflows = () => {
     const { error, setError } = useError()
 
     const getAllAgentflows = useApi(chatflowsApi.getAllAgentflows)
-    const [view, setView] = useState(localStorage.getItem('flowDisplayStyle') || 'card')
+    // Remove view state and toggle logic
+    // const [view, setView] = useState(localStorage.getItem('flowDisplayStyle') || 'card')
     const [agentflowVersion, setAgentflowVersion] = useState(localStorage.getItem('agentFlowVersion') || 'v2')
 
-    const handleChange = (event, nextView) => {
-        if (nextView === null) return
-        localStorage.setItem('flowDisplayStyle', nextView)
-        setView(nextView)
-    }
+    // Remove toggle button for card/list view
+    // const handleChange = (event, nextView) => {
+    //     if (nextView === null) return
+    //     localStorage.setItem('flowDisplayStyle', nextView)
+    //     setView(nextView)
+    // }
 
     const handleVersionChange = (event, nextView) => {
         if (nextView === null) return
@@ -150,7 +150,7 @@ const Agentflows = () => {
                         onSearchChange={onSearchChange}
                         search={true}
                         searchPlaceholder='Search Name or Category'
-                        title='AgentMesh'
+                        title='Agent Mesh'
                         description='Multi-agent systems, workflow orchestration'
                     >
                         <ToggleButtonGroup
@@ -186,7 +186,8 @@ const Agentflows = () => {
                                 V1
                             </ToggleButton>
                         </ToggleButtonGroup>
-                        <ToggleButtonGroup
+                        {/* Remove toggle button for card/list view */}
+                        {/* <ToggleButtonGroup
                             sx={{ borderRadius: 2, maxHeight: 40 }}
                             value={view}
                             color='secondary'
@@ -217,55 +218,29 @@ const Agentflows = () => {
                             >
                                 <IconList />
                             </ToggleButton>
-                        </ToggleButtonGroup>
+                        </ToggleButtonGroup> */}
                         <StyledPermissionButton
                             permissionId={'agentflows:create'}
                             variant='contained'
                             onClick={addNew}
                             startIcon={<IconPlus />}
-                            sx={{ borderRadius: 2, 
-                                height: 40,
-                                backgroundColor: '#0096c7', 
-                                '&:hover': {backgroundColor: '#0096c7' }  }}
+                            sx={{ borderRadius: 2, height: 40, backgroundColor: '#0096c7', '&:hover': { backgroundColor: '#0096c7' } }}
                         >
                             Add New
                         </StyledPermissionButton>
                     </ViewHeader>
-                    {!view || view === 'card' ? (
-                        <>
-                            {isLoading && !getAllAgentflows.data ? (
-                                <Box display='grid' gridTemplateColumns='repeat(3, 1fr)' gap={gridSpacing}>
-                                    <Skeleton variant='rounded' height={160} />
-                                    <Skeleton variant='rounded' height={160} />
-                                    <Skeleton variant='rounded' height={160} />
-                                </Box>
-                            ) : (
-                                <Box display='grid' gridTemplateColumns='repeat(3, 1fr)' gap={gridSpacing}>
-                                    {getAllAgentflows.data?.filter(filterFlows).map((data, index) => (
-                                        <ItemCard
-                                            key={index}
-                                            onClick={() => goToCanvas(data)}
-                                            data={data}
-                                            images={images[data.id]}
-                                            icons={icons[data.id]}
-                                        />
-                                    ))}
-                                </Box>
-                            )}
-                        </>
-                    ) : (
-                        <FlowListTable
-                            isAgentCanvas={true}
-                            isAgentflowV2={agentflowVersion === 'v2'}
-                            data={getAllAgentflows.data}
-                            images={images}
-                            icons={icons}
-                            isLoading={isLoading}
-                            filterFunction={filterFlows}
-                            updateFlowsApi={getAllAgentflows}
-                            setError={setError}
-                        />
-                    )}
+                    {/* Only render the list view */}
+                    <FlowListTable
+                        isAgentCanvas={true}
+                        isAgentflowV2={agentflowVersion === 'v2'}
+                        data={getAllAgentflows.data}
+                        images={images}
+                        icons={icons}
+                        isLoading={isLoading}
+                        filterFunction={filterFlows}
+                        updateFlowsApi={getAllAgentflows}
+                        setError={setError}
+                    />
                     {!isLoading && (!getAllAgentflows.data || getAllAgentflows.data.length === 0) && (
                         <Stack sx={{ alignItems: 'center', justifyContent: 'center' }} flexDirection='column'>
                             <Box sx={{ p: 2, height: 'auto' }}>

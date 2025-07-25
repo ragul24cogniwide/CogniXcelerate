@@ -1,12 +1,11 @@
 import { useEffect, useState, useRef } from 'react'
 
 // material-ui
-import { Box, Stack, ButtonGroup, Skeleton, ToggleButtonGroup, ToggleButton } from '@mui/material'
+import { Box, Stack, ButtonGroup } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 
 // project imports
 import MainCard from '@/ui-component/cards/MainCard'
-import ItemCard from '@/ui-component/cards/ItemCard'
 import ToolDialog from './ToolDialog'
 import ViewHeader from '@/layout/MainLayout/ViewHeader'
 import ErrorBoundary from '@/ErrorBoundary'
@@ -19,10 +18,9 @@ import toolsApi from '@/api/tools'
 // Hooks
 import useApi from '@/hooks/useApi'
 import { useError } from '@/store/context/ErrorContext'
-import { gridSpacing } from '@/store/constant'
 
 // icons
-import { IconPlus, IconFileUpload, IconLayoutGrid, IconList } from '@tabler/icons-react'
+import { IconPlus, IconFileUpload } from '@tabler/icons-react'
 import ToolEmptySVG from '@/assets/images/tools_empty.svg'
 
 // ==============================|| TOOLS ||============================== //
@@ -35,15 +33,17 @@ const Tools = () => {
     const [isLoading, setLoading] = useState(true)
     const [showDialog, setShowDialog] = useState(false)
     const [dialogProps, setDialogProps] = useState({})
-    const [view, setView] = useState(localStorage.getItem('toolsDisplayStyle') || 'card')
+    // Remove view state and toggle logic
+    // const [view, setView] = useState(localStorage.getItem('toolsDisplayStyle') || 'card')
 
     const inputRef = useRef(null)
 
-    const handleChange = (event, nextView) => {
-        if (nextView === null) return
-        localStorage.setItem('toolsDisplayStyle', nextView)
-        setView(nextView)
-    }
+    // Remove toggle button for card/list view
+    // const handleChange = (event, nextView) => {
+    //     if (nextView === null) return
+    //     localStorage.setItem('toolsDisplayStyle', nextView)
+    //     setView(nextView)
+    // }
 
     const onUploadFile = (file) => {
         try {
@@ -137,10 +137,11 @@ const Tools = () => {
                             onSearchChange={onSearchChange}
                             search={true}
                             searchPlaceholder='Search Tools'
-                            title='Tools'
+                            title='Tool Kit'
                             description='External functions or APIs the agent can use to take action'
                         >
-                            <ToggleButtonGroup
+                            {/* Remove toggle button for card/list view */}
+                            {/* <ToggleButtonGroup
                                 sx={{ borderRadius: 2, maxHeight: 40 }}
                                 value={view}
                                 color='secondary'
@@ -171,14 +172,14 @@ const Tools = () => {
                                 >
                                     <IconList />
                                 </ToggleButton>
-                            </ToggleButtonGroup>
+                            </ToggleButtonGroup> */}
                             <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                 <PermissionButton
                                     permissionId={'tools:create'}
                                     variant='outlined'
                                     onClick={() => inputRef.current.click()}
                                     startIcon={<IconFileUpload />}
-                                    sx={{ borderRadius: 2, height: 40,  }}
+                                    sx={{ borderRadius: 2, height: 40 }}
                                 >
                                     Load
                                 </PermissionButton>
@@ -203,26 +204,8 @@ const Tools = () => {
                                 </StyledPermissionButton>
                             </ButtonGroup>
                         </ViewHeader>
-                        {!view || view === 'card' ? (
-                            <>
-                                {isLoading ? (
-                                    <Box display='grid' gridTemplateColumns='repeat(3, 1fr)' gap={gridSpacing}>
-                                        <Skeleton variant='rounded' height={160} />
-                                        <Skeleton variant='rounded' height={160} />
-                                        <Skeleton variant='rounded' height={160} />
-                                    </Box>
-                                ) : (
-                                    <Box display='grid' gridTemplateColumns='repeat(3, 1fr)' gap={gridSpacing}>
-                                        {getAllToolsApi.data &&
-                                            getAllToolsApi.data
-                                                ?.filter(filterTools)
-                                                .map((data, index) => <ItemCard data={data} key={index} onClick={() => edit(data)} />)}
-                                    </Box>
-                                )}
-                            </>
-                        ) : (
-                            <ToolsTable data={getAllToolsApi.data} isLoading={isLoading} onSelect={edit} />
-                        )}
+                        {/* Only render the list view */}
+                        <ToolsTable data={getAllToolsApi.data} isLoading={isLoading} onSelect={edit} />
                         {!isLoading && (!getAllToolsApi.data || getAllToolsApi.data.length === 0) && (
                             <Stack sx={{ alignItems: 'center', justifyContent: 'center' }} flexDirection='column'>
                                 <Box sx={{ p: 2, height: 'auto' }}>

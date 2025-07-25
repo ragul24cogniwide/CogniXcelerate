@@ -89,7 +89,7 @@
 
 //     const getAllTemplatesMarketplacesApi = useApi(marketplacesApi.getAllTemplatesFromMarketplaces)
 
-//     const [view, setView] = React.useState(localStorage.getItem('mpDisplayStyle') || 'card')
+//     // Remove view state and toggle logic
 //     const [search, setSearch] = useState('')
 //     const [badgeFilter, setBadgeFilter] = useState([])
 //     const [typeFilter, setTypeFilter] = useState([])
@@ -587,38 +587,7 @@
 //                             title='Marketplace'
 //                             description='Explore and use pre-built templates'
 //                         >
-//                             <ToggleButtonGroup
-//                                 sx={{ borderRadius: 2, height: '100%' }}
-//                                 value={view}
-//                                 color='primary'
-//                                 exclusive
-//                                 onChange={handleViewChange}
-//                             >
-//                                 <ToggleButton
-//                                     sx={{
-//                                         borderColor: theme.palette.grey[900] + 25,
-//                                         borderRadius: 2,
-//                                         color: theme?.customization?.isDarkMode ? 'white' : 'inherit'
-//                                     }}
-//                                     variant='contained'
-//                                     value='card'
-//                                     title='Card View'
-//                                 >
-//                                     <IconLayoutGrid />
-//                                 </ToggleButton>
-//                                 <ToggleButton
-//                                     sx={{
-//                                         borderColor: theme.palette.grey[900] + 25,
-//                                         borderRadius: 2,
-//                                         color: theme?.customization?.isDarkMode ? 'white' : 'inherit'
-//                                     }}
-//                                     variant='contained'
-//                                     value='list'
-//                                     title='List View'
-//                                 >
-//                                     <IconList />
-//                                 </ToggleButton>
-//                             </ToggleButtonGroup>
+//                             {/* Remove toggle button for card/list view */}
 //                         </ViewHeader>
 //                         {hasPermission('templates:marketplace') && hasPermission('templates:custom') && (
 //                             <Tabs value={activeTabValue} onChange={handleTabChange} textColor='primary' aria-label='tabs' centered>
@@ -678,84 +647,19 @@
 //                                     </Button>
 //                                 )}
 
-//                                 {!view || view === 'card' ? (
-//                                     <>
-//                                         {isLoading ? (
-//                                             <Box display='grid' gridTemplateColumns='repeat(3, 1fr)' gap={gridSpacing}>
-//                                                 <Skeleton variant='rounded' height={160} />
-//                                                 <Skeleton variant='rounded' height={160} />
-//                                                 <Skeleton variant='rounded' height={160} />
-//                                             </Box>
-//                                         ) : (
-//                                             <Box display='grid' gridTemplateColumns='repeat(3, 1fr)' gap={gridSpacing}>
-//                                                 {getAllTemplatesMarketplacesApi.data
-//                                                     ?.filter(filterByBadge)
-//                                                     .filter(filterByType)
-//                                                     .filter(filterFlows)
-//                                                     .filter(filterByFramework)
-//                                                     .filter(filterByUsecases)
-//                                                     .map((data, index) => (
-//                                                         <Box key={index}>
-//                                                             {data.badge && (
-//                                                                 <Badge
-//                                                                     sx={{
-//                                                                         width: '100%',
-//                                                                         height: '100%',
-//                                                                         '& .MuiBadge-badge': {
-//                                                                             right: 20
-//                                                                         }
-//                                                                     }}
-//                                                                     badgeContent={data.badge}
-//                                                                     color={data.badge === 'POPULAR' ? 'primary' : 'error'}
-//                                                                 >
-//                                                                     {(data.type === 'Chatflow' ||
-//                                                                         data.type === 'Agentflow' ||
-//                                                                         data.type === 'AgentflowV2') && (
-//                                                                         <ItemCard
-//                                                                             onClick={() => goToCanvas(data)}
-//                                                                             data={data}
-//                                                                             images={images[data.id]}
-//                                                                             icons={icons[data.id]}
-//                                                                         />
-//                                                                     )}
-//                                                                     {data.type === 'Tool' && (
-//                                                                         <ItemCard data={data} onClick={() => goToTool(data)} />
-//                                                                     )}
-//                                                                 </Badge>
-//                                                             )}
-//                                                             {!data.badge &&
-//                                                                 (data.type === 'Chatflow' ||
-//                                                                     data.type === 'Agentflow' ||
-//                                                                     data.type === 'AgentflowV2') && (
-//                                                                     <ItemCard
-//                                                                         onClick={() => goToCanvas(data)}
-//                                                                         data={data}
-//                                                                         images={images[data.id]}
-//                                                                         icons={icons[data.id]}
-//                                                                     />
-//                                                                 )}
-//                                                             {!data.badge && data.type === 'Tool' && (
-//                                                                 <ItemCard data={data} onClick={() => goToTool(data)} />
-//                                                             )}
-//                                                         </Box>
-//                                                     ))}
-//                                             </Box>
-//                                         )}
-//                                     </>
-//                                 ) : (
-//                                     <MarketplaceTable
-//                                         data={getAllTemplatesMarketplacesApi.data}
-//                                         filterFunction={filterFlows}
-//                                         filterByType={filterByType}
-//                                         filterByBadge={filterByBadge}
-//                                         filterByFramework={filterByFramework}
-//                                         filterByUsecases={filterByUsecases}
-//                                         goToTool={goToTool}
-//                                         goToCanvas={goToCanvas}
-//                                         isLoading={isLoading}
-//                                         setError={setError}
-//                                     />
-//                                 )}
+//                                 {/* Only render the list view */}
+//                                 <MarketplaceTable
+//                                     data={getAllTemplatesMarketplacesApi.data}
+//                                     filterFunction={filterFlows}
+//                                     filterByType={filterByType}
+//                                     filterByBadge={filterByBadge}
+//                                     filterByFramework={filterByFramework}
+//                                     filterByUsecases={filterByUsecases}
+//                                     goToTool={goToTool}
+//                                     goToCanvas={goToCanvas}
+//                                     isLoading={isLoading}
+//                                     setError={setError}
+//                                 />
 
 //                                 {!isLoading &&
 //                                     (!getAllTemplatesMarketplacesApi.data || getAllTemplatesMarketplacesApi.data.length === 0) && (
@@ -811,86 +715,21 @@
 //                                         Clear All
 //                                     </Button>
 //                                 )}
-//                                 {!view || view === 'card' ? (
-//                                     <>
-//                                         {isLoading ? (
-//                                             <Box display='grid' gridTemplateColumns='repeat(3, 1fr)' gap={gridSpacing}>
-//                                                 <Skeleton variant='rounded' height={160} />
-//                                                 <Skeleton variant='rounded' height={160} />
-//                                                 <Skeleton variant='rounded' height={160} />
-//                                             </Box>
-//                                         ) : (
-//                                             <Box display='grid' gridTemplateColumns='repeat(3, 1fr)' gap={gridSpacing}>
-//                                                 {getAllCustomTemplatesApi.data
-//                                                     ?.filter(filterByBadge)
-//                                                     .filter(filterByType)
-//                                                     .filter(filterFlows)
-//                                                     .filter(filterByFramework)
-//                                                     .filter(filterByUsecases)
-//                                                     .map((data, index) => (
-//                                                         <Box key={index}>
-//                                                             {data.badge && (
-//                                                                 <Badge
-//                                                                     sx={{
-//                                                                         width: '100%',
-//                                                                         height: '100%',
-//                                                                         '& .MuiBadge-badge': {
-//                                                                             right: 20
-//                                                                         }
-//                                                                     }}
-//                                                                     badgeContent={data.badge}
-//                                                                     color={data.badge === 'POPULAR' ? 'primary' : 'error'}
-//                                                                 >
-//                                                                     {(data.type === 'Chatflow' ||
-//                                                                         data.type === 'Agentflow' ||
-//                                                                         data.type === 'AgentflowV2') && (
-//                                                                         <ItemCard
-//                                                                             onClick={() => goToCanvas(data)}
-//                                                                             data={data}
-//                                                                             images={templateImages[data.id]}
-//                                                                             icons={templateIcons[data.id]}
-//                                                                         />
-//                                                                     )}
-//                                                                     {data.type === 'Tool' && (
-//                                                                         <ItemCard data={data} onClick={() => goToTool(data)} />
-//                                                                     )}
-//                                                                 </Badge>
-//                                                             )}
-//                                                             {!data.badge &&
-//                                                                 (data.type === 'Chatflow' ||
-//                                                                     data.type === 'Agentflow' ||
-//                                                                     data.type === 'AgentflowV2') && (
-//                                                                     <ItemCard
-//                                                                         onClick={() => goToCanvas(data)}
-//                                                                         data={data}
-//                                                                         images={templateImages[data.id]}
-//                                                                         icons={templateIcons[data.id]}
-//                                                                     />
-//                                                                 )}
-//                                                             {!data.badge && data.type === 'Tool' && (
-//                                                                 <ItemCard data={data} onClick={() => goToTool(data)} />
-//                                                             )}
-//                                                         </Box>
-//                                                     ))}
-//                                             </Box>
-//                                         )}
-//                                     </>
-//                                 ) : (
-//                                     <MarketplaceTable
-//                                         data={getAllCustomTemplatesApi.data}
-//                                         filterFunction={filterFlows}
-//                                         filterByType={filterByType}
-//                                         filterByBadge={filterByBadge}
-//                                         filterByFramework={filterByFramework}
-//                                         filterByUsecases={filterByUsecases}
-//                                         goToTool={goToTool}
-//                                         goToCanvas={goToCanvas}
-//                                         isLoading={isLoading}
-//                                         setError={setError}
-//                                         onDelete={hasPermission('templates:custom-delete') ? onDeleteCustomTemplate : null}
-//                                         onShare={hasPermission('templates:custom-share') ? share : null}
-//                                     />
-//                                 )}
+//                                 {/* Only render the list view */}
+//                                 <MarketplaceTable
+//                                     data={getAllCustomTemplatesApi.data}
+//                                     filterFunction={filterFlows}
+//                                     filterByType={filterByType}
+//                                     filterByBadge={filterByBadge}
+//                                     filterByFramework={filterByFramework}
+//                                     filterByUsecases={filterByUsecases}
+//                                     goToTool={goToTool}
+//                                     goToCanvas={goToCanvas}
+//                                     isLoading={isLoading}
+//                                     setError={setError}
+//                                     onDelete={hasPermission('templates:custom-delete') ? onDeleteCustomTemplate : null}
+//                                     onShare={hasPermission('templates:custom-share') ? share : null}
+//                                 />
 //                                 {!isLoading && (!getAllCustomTemplatesApi.data || getAllCustomTemplatesApi.data.length === 0) && (
 //                                     <Stack sx={{ alignItems: 'center', justifyContent: 'center' }} flexDirection='column'>
 //                                         <Box sx={{ p: 2, height: 'auto' }}>
