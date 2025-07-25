@@ -107,6 +107,17 @@ const markdownConverter = new showdown.Converter({
     tasklists: true
 })
 
+// Utility to extract variables from a prompt template string
+function extractPromptVariables(template) {
+    const regex = /{([a-zA-Z0-9_]+)}/g
+    const vars = new Set()
+    let match
+    while ((match = regex.exec(template)) !== null) {
+        vars.add(match[1])
+    }
+    return Array.from(vars)
+}
+
 // ===========================|| NodeInputHandler ||=========================== //
 
 const NodeInputHandler = ({
@@ -167,6 +178,10 @@ const NodeInputHandler = ({
     const [langfusePrompts, setLangfusePrompts] = useState([])
     const [langfusePromptLoading, setLangfusePromptLoading] = useState(false)
     const [langfusePromptError, setLangfusePromptError] = useState('')
+
+    // In NodeInputHandler, add state to track prompt variable values
+    const [promptVariableValues, setPromptVariableValues] = useState({})
+    const [promptVariables, setPromptVariables] = useState([])
 
     const handleDataChange = ({ inputParam, newValue }) => {
         data.inputs[inputParam.name] = newValue
@@ -801,6 +816,11 @@ const NodeInputHandler = ({
         data.inputs['systemMessagePrompt'] = promptText // Reflect in system message box
         data.inputs['promptSource'] = 'langfuse'
         setShowLangfusePromptDialog(false)
+    }
+
+    // Handler for variable input change
+    const handlePromptVariableChange = (varName, value) => {
+        setPromptVariableValues((prev) => ({ ...prev, [varName]: value }))
     }
 
     // Handler for switching prompt source

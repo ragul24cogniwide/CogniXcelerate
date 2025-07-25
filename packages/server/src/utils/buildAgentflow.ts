@@ -221,6 +221,27 @@ export const resolveVariables = async (
     let flowNodeData = cloneDeep(reactFlowNodeData)
     const types = 'inputs'
 
+    // --- Begin: Check for missing prompt variables ---
+    // Collect all variables in all string inputs
+    const variableRegex = /{([a-zA-Z0-9_]+)}/g
+    const requiredVars = new Set<string>()
+    for (const key in flowNodeData[types]) {
+        const val = flowNodeData[types][key]
+        if (typeof val === 'string') {
+            let match
+            while ((match = variableRegex.exec(val)) !== null) {
+                requiredVars.add(match[1])
+            }
+        }
+    }
+    // Check if all required variables are present in inputs or form
+    const providedVars = new Set([...Object.keys(flowNodeData[types] || {}), ...Object.keys(form || {})])
+    const missingVars = Array.from(requiredVars).filter((v) => !providedVars.has(v))
+    if (missingVars.length > 0) {
+        throw new Error(`Missing value(s) for input variable(s): ${missingVars.join(', ')}`)
+    }
+    // --- End: Check for missing prompt variables ---
+
     const resolveNodeReference = async (value: any): Promise<any> => {
         // If value is an array, process each element
         if (Array.isArray(value)) {
