@@ -536,25 +536,25 @@ export const additionalCallbacks = async (nodeData: INodeData, options: ICommonO
                     callbacks.push(tracer)
                 } else if (provider === 'langFuse') {
                     const release = analytic[provider].release as string
+                    // HARDCODED CREDENTIALS
+                    const langFuseSecretKey = "sk-lf-bd396e5b-a438-4deb-8c81-1c95813c4d79";
+                    const langFusePublicKey = "pk-lf-5a2baefc-e2cf-480d-9a4d-468600a6b6a4";
+                    const langFuseEndpoint = "http://10.10.20.156:3000";
 
-                    const langFuseSecretKey = getCredentialParam('langFuseSecretKey', credentialData, nodeData)
-                    const langFusePublicKey = getCredentialParam('langFusePublicKey', credentialData, nodeData)
-                    const langFuseEndpoint = getCredentialParam('langFuseEndpoint', credentialData, nodeData)
-
-                    let langFuseOptions: any = {
+                    const langfuse = new Langfuse({
                         secretKey: langFuseSecretKey,
                         publicKey: langFusePublicKey,
-                        baseUrl:  'http://10.10.20.156:3000',
-                        sdkIntegration: 'Flowise'
-                    }
-                    if (release) langFuseOptions.release = release
-                    if (options.chatId) langFuseOptions.sessionId = options.chatId
-
-                    if (nodeData?.inputs?.analytics?.langFuse) {
-                        langFuseOptions = { ...langFuseOptions, ...nodeData?.inputs?.analytics?.langFuse }
-                    }
-
-                    const handler = new CallbackHandler(langFuseOptions)
+                        baseUrl: langFuseEndpoint,
+                        sdkIntegration: 'Flowise',
+                        release
+                    })
+                    const handler = new CallbackHandler({
+                        secretKey: langFuseSecretKey,
+                        publicKey: langFusePublicKey,
+                        baseUrl: langFuseEndpoint,
+                        sdkIntegration: 'Flowise',
+                        release
+                    })
                     callbacks.push(handler)
                 } else if (provider === 'lunary') {
                     const lunaryPublicKey = getCredentialParam('lunaryAppId', credentialData, nodeData)
@@ -669,7 +669,7 @@ export class AnalyticHandler {
     private static instances: Map<string, AnalyticHandler> = new Map()
     private nodeData: INodeData
     private options: ICommonObject
-    private handlers: ICommonObject = {}
+    private handlers: ICommonObject = {} as ICommonObject
     private initialized: boolean = false
     private analyticsConfig: string | undefined
     private chatId: string
@@ -753,14 +753,15 @@ export class AnalyticHandler {
             this.handlers['langSmith'] = { client, langSmithProject }
         } else if (provider === 'langFuse') {
             const release = providerConfig.release as string
-            const langFuseSecretKey = getCredentialParam('langFuseSecretKey', credentialData, this.nodeData)
-            const langFusePublicKey = getCredentialParam('langFusePublicKey', credentialData, this.nodeData)
-            const langFuseEndpoint = getCredentialParam('langFuseEndpoint', credentialData, this.nodeData)
+            // HARDCODED CREDENTIALS
+            const langFuseSecretKey = "sk-lf-bd396e5b-a438-4deb-8c81-1c95813c4d79";
+            const langFusePublicKey = "pk-lf-5a2baefc-e2cf-480d-9a4d-468600a6b6a4";
+            const langFuseEndpoint = "http://10.10.20.156:3000";
 
             const langfuse = new Langfuse({
                 secretKey: langFuseSecretKey,
                 publicKey: langFusePublicKey,
-                baseUrl: 'http://10.10.20.156:3000',
+                baseUrl: langFuseEndpoint,
                 sdkIntegration: 'Flowise',
                 release
             })

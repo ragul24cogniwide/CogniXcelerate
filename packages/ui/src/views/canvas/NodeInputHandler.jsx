@@ -794,7 +794,10 @@ const NodeInputHandler = ({
         setShowLangfusePromptDialog(true)
         try {
             const resp = await promptApi.getLangfusePrompts()
-            if (resp.data && Array.isArray(resp.data)) {
+            // Handle new Langfuse API response structure
+            if (resp.data && resp.data.data && Array.isArray(resp.data.data)) {
+                setLangfusePrompts(resp.data.data)
+            } else if (resp.data && Array.isArray(resp.data)) {
                 setLangfusePrompts(resp.data)
             } else if (resp.data && Array.isArray(resp.data.prompts)) {
                 setLangfusePrompts(resp.data.prompts)
@@ -810,12 +813,45 @@ const NodeInputHandler = ({
     }
 
     // Handler for selecting a Langfuse prompt
-    const onSelectLangfusePrompt = (prompt) => {
-        const promptText = prompt.prompt || prompt.value || ''
-        data.inputs['langfusePrompt'] = promptText
-        data.inputs['systemMessagePrompt'] = promptText // Reflect in system message box
-        data.inputs['promptSource'] = 'langfuse'
-        setShowLangfusePromptDialog(false)
+    const onSelectLangfusePrompt = async (prompt) => {
+        try {
+            // Try to fetch the actual prompt content
+            const promptContent = await promptApi.getLangfusePromptContent(prompt.name)
+            
+            // Extract the prompt text from the content response
+            let promptText = ''
+            if (promptContent.data && promptContent.data.prompt) {
+                promptText = promptContent.data.prompt
+            } else if (promptContent.data && promptContent.data.config && promptContent.data.config.prompt) {
+                promptText = promptContent.data.config.prompt
+            } else if (promptContent.data && promptContent.data.template) {
+                promptText = promptContent.data.template
+            } else if (promptContent.prompt) {
+                promptText = promptContent.prompt
+            } else {
+                // Fallback to prompt name if no content found
+                promptText = `[Langfuse Prompt: ${prompt.name}]`
+                console.log('No prompt content found, using fallback')
+            }
+            
+            data.inputs['langfusePrompt'] = promptText
+            data.inputs['systemMessagePrompt'] = promptText // Reflect in system message box
+            data.inputs['promptSource'] = 'langfuse'
+            setShowLangfusePromptDialog(false)
+            
+            // Clear any previous errors
+            setLangfusePromptError('')
+            
+        } catch (err) {
+            console.error('Failed to fetch prompt content:', err)
+            // Use fallback if content fetching fails
+            const promptText = `[Langfuse Prompt: ${prompt.name}]`
+            data.inputs['langfusePrompt'] = promptText
+            data.inputs['systemMessagePrompt'] = promptText
+            data.inputs['promptSource'] = 'langfuse'
+            setShowLangfusePromptDialog(false)
+            setLangfusePromptError('')
+        }
     }
 
     // Handler for variable input change
@@ -916,13 +952,17 @@ const NodeInputHandler = ({
                                                         onClick={() => onSelectLangfusePrompt(prompt)}
                                                     >
                                                         <Typography variant='subtitle2'>
-                                                            {prompt.name || prompt.label || prompt.prompt || 'Unnamed Prompt'}
+                                                            {prompt.name || prompt.label || 'Unnamed Prompt'}
                                                         </Typography>
-                                                        {prompt.prompt && (
-                                                            <Typography variant='body2' sx={{ color: 'gray' }}>
-                                                                {prompt.prompt.slice(0, 100)}...
-                                                            </Typography>
-                                                        )}
+                                                        <Typography variant='body2' sx={{ color: 'gray', fontSize: '0.8rem' }}>
+                                                            Labels: {prompt.labels?.join(', ') || 'No labels'}
+                                                        </Typography>
+                                                        <Typography variant='body2' sx={{ color: 'gray', fontSize: '0.8rem' }}>
+                                                            Updated: {new Date(prompt.lastUpdatedAt).toLocaleDateString()}
+                                                        </Typography>
+                                                        <Typography variant='body2' sx={{ color: 'gray', fontSize: '0.8rem' }}>
+                                                            Versions: {prompt.versions?.join(', ') || 'No versions'}
+                                                        </Typography>
                                                     </Box>
                                                 ))}
                                             </Box>

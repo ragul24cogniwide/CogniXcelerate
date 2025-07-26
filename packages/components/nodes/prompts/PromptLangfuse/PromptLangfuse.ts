@@ -51,15 +51,15 @@ class PromptLangfuse_Prompts implements INode {
     }
 
     async init(nodeData: INodeData, _: string, options: ICommonObject): Promise<any> {
-        const credentialData = await getCredentialData(nodeData.credential ?? '', options)
-        const langFuseSecretKey = getCredentialParam('langFuseSecretKey', credentialData, nodeData)
-        const langFusePublicKey = getCredentialParam('langFusePublicKey', credentialData, nodeData)
-        const langFuseEndpoint = getCredentialParam('langFuseEndpoint', credentialData, nodeData)
+        // HARDCODED CREDENTIALS
+        const langFuseSecretKey = "sk-lf-bd396e5b-a438-4deb-8c81-1c95813c4d79";
+        const langFusePublicKey = "pk-lf-5a2baefc-e2cf-480d-9a4d-468600a6b6a4";
+        const langFuseEndpoint = "http://10.10.20.156:3000";
 
         const langfuse = new Langfuse({
             secretKey: langFuseSecretKey,
             publicKey: langFusePublicKey,
-            baseUrl: 'http://10.10.20.156:3000',
+            baseUrl: langFuseEndpoint,
             sdkIntegration: 'Flowise'
         })
 
